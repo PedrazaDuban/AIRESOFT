@@ -1,0 +1,202 @@
+<!------------------------------------->
+		
+		var gauge1 = new GaugeSVG({
+			id: "container1",
+			title: "Temperatura",
+			label: " °C",
+			gaugeWidthScale: 1.0,
+			min: 16.0,
+			max: 50.0,
+			value:-1,
+			lowerActionLimit: 17.0,
+			lowerWarningLimit: 18.0,
+			upperWarningLimit:26 ,
+			upperActionLimit: 30,
+			needleColor: "#000000",
+			optimumRangeColor: "#88ff88",
+			warningRangeColor: "#f4f444",
+			actionRangeColor: "#ff8888"
+		});
+		
+        var TestGuage = new GaugeSVG({
+            id: "Test", // @Model.Id
+            canvasBackColor: "#f8f8f8",
+            min: 0.0, // @Model.Min
+            max: 100.0, // @Model.Max
+            minmaxColor: "#000000",
+            title: "Humedad", // @Model.Title
+            gaugeBorderColor: "#8888cc",
+            label: "%", // @Model.Label
+            warningRangeColor: "#ffff00",
+            lowerActionLimit: 5,
+            lowerWarningLimit: 25,
+			upperWarningLimit:75 ,
+			upperActionLimit: 95,
+            value: -1, // @Model.Value
+			showMinMax: true
+		})    
+       	   
+             
+		
+      <!-- function OnOff(dato){ -->
+        <!-- message = new Paho.MQTT.Message(dato); -->
+        <!-- message.destinationName = '/' + usuario + '/salidaDigital' -->
+        <!-- client.send(message); -->
+      <!-- }; -->
+	  
+	  <!----VARIABLES--->
+	  estadoDigital="OFF";
+	  Temperaturas = -1;
+	  Humedades = -1;
+	  
+	    function OnOff2(){
+		if(estadoDigital == "ON"){
+        message = new Paho.MQTT.Message("OFF");
+        message.destinationName = '/' + usuario + '/salidaDigital'
+        client.send(message);
+		}
+		else if(estadoDigital == "OFF"){
+        message = new Paho.MQTT.Message("ON");
+        message.destinationName = '/' + usuario + '/salidaDigital'
+        client.send(message);
+		}
+      };
+      
+       
+      // called when the client connects
+      function onConnect() {
+        // Once a connection has been made, make a subscription and send a message.
+        console.log("onConnect");
+        client.subscribe("#");
+      }
+        
+      // called when the client loses its connection
+      function onConnectionLost(responseObject) {
+        if (responseObject.errorCode !== 0) {
+          console.log("onConnectionLost:", responseObject.errorMessage);
+          setTimeout(function() { client.connect() }, 5000);
+        }
+      }
+        
+      // called when a message arrives
+      function onMessageArrived(message) {
+        if (message.destinationName == '/' + usuario + '/' + 'temperatura') { //acá coloco el topic
+           //document.getElementById("temperatura").textContent = message.payloadString  + " ºC";
+			gauge1.refresh(message.payloadString);
+			Temperaturas = parseFloat(message.payloadString);
+        }
+		if (message.destinationName == '/' + usuario + '/' + 'humedad') { //acá coloco el topic
+            //document.getElementById("humedad").textContent = message.payloadString  + " %";
+			TestGuage.refresh(message.payloadString);
+        }
+        if (message.destinationName == '/' + usuario + '/' + 'pulsador') { //acá coloco el topic
+            //document.getElementById("pulsador").textContent = message.payloadString;
+			if(message.payloadString == "presionado"){
+				document.getElementById("imgPulsador").src ="stop-air.png"
+			}
+			else if(message.payloadString == "NO presionado"){
+				document.getElementById("imgPulsador").src ="start-air.png"
+			}
+        }
+        if (message.destinationName == '/' + usuario + '/' + 'salidaDigital') { //acá coloco el topic
+            //document.getElementById("salidaDigital").textContent = message.payloadString;
+			estadoDigital=message.payloadString;
+        }
+        
+      }
+
+        function onFailure(invocationContext, errorCode, errorMessage) {
+          var errDiv = document.getElementById("error");
+          errDiv.textContent = "Could not connect to WebSocket server, most likely you're behind a firewall that doesn't allow outgoing connections to port 39627";
+          errDiv.style.display = "block";
+        }
+        
+        var clientId = "ws" + Math.random();
+        // Create a client instance
+        var client = new Paho.MQTT.Client("m11.cloudmqtt.com", 	31628, clientId);
+        
+        // set callback handlers
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+        
+        // connect the client
+        client.connect({
+          useSSL: true,
+          userName: usuario,
+          password: contrasena,
+          onSuccess: onConnect,
+          onFailure: onFailure
+        });	
+		
+		Highcharts.setOptions({
+			global: {
+				useUTC: false
+			}
+		});
+
+		// Create the chart
+		Highcharts.stockChart('container', {
+			chart: {
+				events: {
+					load: function () {
+
+						// set up the updating of the chart each second
+						var series = this.series[0];
+						setInterval(function () {
+							var x = (new Date()).getTime(), // current time
+								y = Temperaturas;
+							series.addPoint([x, y]);
+						}, 1000);
+					}
+				}
+			},
+
+			rangeSelector: {
+				buttons: [{
+					count: 1,
+					type: 'minute',
+					text: '1M'
+				}, {
+					count: 5,
+					type: 'minute',
+					text: '5M'
+				},{
+					type: 'all',
+					text: 'All'
+				}],
+				inputEnabled: false,
+				selected: 0
+			},
+
+			title: {
+				text: 'Live random data'
+			},
+
+			exporting: {
+				enabled: false
+			},
+
+			series: [{
+				name: 'Random data',
+				data: (function () {
+					// generate an array of random data
+					var data = [],
+						time = (new Date()).getTime(),
+						i;
+
+					for (i = -300; i <= 0; i += 1) {
+						data.push([
+							time + i * 1000,
+							-1
+						]);
+					}
+					return data;
+				}())
+			}]
+		});
+
+
+	
+    </script>
+  </body>
+</html>

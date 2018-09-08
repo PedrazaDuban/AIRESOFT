@@ -1,0 +1,88 @@
+* {box-sizing: border-box;}
+body{
+	margin:0;
+	font-family: sans-serif;
+	background:#204862;
+	
+}
+h1{
+	color:#fff;
+	text-align: center;
+	}
+
+.form-login{
+	width:98%;
+	max-width:500px;
+	margin:auto;
+	background:white;
+	border-radius: 7px;
+}
+.form_titulo{
+	background:deepskyblue;
+	color:#fff;
+	padding:30px;
+	text-align: center;
+	font-size:25px;
+	border-top-left-radius:7px;
+	border-top-right-radius:7px;
+	border-bottom:2px solid crimson;
+	
+	background-image: url(../imagenes/Logo_AireSoft3.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size:70%;
+}
+.contenedor-inputs{
+	padding:10px 30px;
+	display: flex;
+	flex-wrap:wrap;
+	justify-content: space-between;
+}
+input{
+	margin-bottom:15px; 
+	padding:15px; 
+	font-size:13px;	
+	border-radius:3px; 
+	border:1px solid darkgrey;
+}
+
+.input-48{
+	width: 48%;
+}
+.input-100{
+	width: 100%;
+}
+.btn-enviar{background:crimson; 
+	color:#fff;
+	padding:5px 30px;
+	font-size:14px;
+}
+.btn-enviar:active{
+	transform:scale(1.05);
+}
+.btn-escanear{
+	background:crimson;
+	color:#fff;
+	padding:5px 30px;
+	font-size:14px;
+}
+.btn-escanear:active{
+	transform:scale(1.05);
+}
+p {
+	display: block;
+	width: 100%;
+	color: #424242;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-left: 0;
+	margin-right: 0;
+}
+label{
+	background:crimson;
+	color:#fff;
+	width: 100%;
+	padding:5px 30px;
+	margin-bottom:5px; 
+	border-radius:3px;
+}

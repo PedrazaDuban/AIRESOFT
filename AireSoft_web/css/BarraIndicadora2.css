@@ -1,0 +1,17 @@
+*{margin: 0 ;padding: 0; outline: 0;}
+body {
+        text-align: center;
+      }
+      
+      #container1, #Test {
+        width:250px; height:200px;
+		display: inline-block;
+        margin: 1em;
+      }
+          
+      p {
+        display: block;
+        width: 450px;
+        margin: 2em auto;
+        text-align: left;
+      }
